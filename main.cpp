@@ -48,15 +48,15 @@ int main()
     //////////////////////////// Initialize the variables /////////////////////////////
     pcl::PolygonMesh objectMesh;
 
-    double pixelGridDistance = 2;
+    double pixelGridDistance = 0.5;
 
     // Camera roll,pitch and yaw - relative to WCS
     float cameraRollZAxis = 0*M_PI/180; //
     float cameraPitchXAxis = (90-54.7)*M_PI/180; // 45
     float cameraYawYAxis = -135*M_PI/180; //-135
-    float cameraXDistance = 0.75;
-    float cameraYDistance = 1.75;
-    float cameraZDistance = 0.75;
+    float cameraXDistance = 0.3;
+    float cameraYDistance = 0.3;
+    float cameraZDistance = 0.3;
 
     // Camera Specfic Values
     double cameraYFOVRadians = 0.38008945; //21.7775213deg //Angle represents half the field of view.
@@ -66,7 +66,7 @@ int main()
     ///////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////// Load files ////////////////////////////////////
-    pcl::io::load("./Models/Sphere_50.ply", objectMesh);
+    pcl::io::load("./Models/Sphere_25.ply", objectMesh);
     pcl::PointCloud<pcl::PointXYZ>::Ptr objectPointCloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::PointNormal>::Ptr objectNormalCloud (new pcl::PointCloud<pcl::PointNormal>);
 
@@ -626,12 +626,14 @@ int main()
             pointIntersectionCounter++;
         }
         // Choose which points to keep or not.
-        bool isSuccessfull = true;
-        float perfectPointDensity = pointIntersectionCounter/faceArea;
+        float perfectPointDensity = pointIntersectionCounter/(faceArea*1000000);
         float pointProbability = pointsPerMM2 / perfectPointDensity;
+
         for(int iCounter = 0; iCounter < intersectedPoints->points.size(); iCounter++)
         {
-            float randomNumberGenerator = ((double) rand() / (RAND_MAX))/10;
+            bool isSuccessfull = true;
+
+            float randomNumberGenerator = ((double) rand() / (RAND_MAX));
 
             isSuccessfull = isSuccessfull && (randomNumberGenerator <= pointProbability);
 
