@@ -26,7 +26,7 @@ using namespace std;
 #define VIRTUAL_VIEW_BACKFACE_AND_FRUSTUM_CULLING
 #define VIRTUAL_VIEW_INTERSECTED_POINTS
 
-float thetaWhiteSample(float x)
+float pointCountWhiteSample(float x)
 {
     float p1 = 7.629e-05;
     float p2 = -0.0002461;
@@ -39,11 +39,23 @@ float thetaWhiteSample(float x)
     return thetaOutput;
 }
 
+float dotProductAngle(pcl::PointXYZ p1, pcl::PointXYZ p2)
+{
+    float p1p2dot = (p1.x * p2.x + p1.y * p2.y + p1.z * p2.z);
+    float p1Magnitude = sqrt(pow(p1.x,2) + pow(p1.y,2) + pow(p1.z,2));
+    float p2Magnitude = sqrt(pow(p2.x,2) + pow(p2.y,2) + pow(p2.z,2));
+    float p1p2angle = acos(p1p2dot / (p1Magnitude*p2Magnitude));
+
+    return p1p2angle;
+}
+
 int main()
 {
     // Temporary Variables - For testing purposes only, shouldn't be here in release code.
-    float pointsPerMM2 = 1.3;
-
+    float pointsPerfectPerMM2 = 1.3;
+    // Above value is only at a certain distance.
+    // Need to choose a distance and then project small area's back agains the samt distance plane.
+    // The number of points per mm^2 can then be used to calculate the perfect number of points.
 
     //////////////////////////// Initialize the variables /////////////////////////////
     pcl::PolygonMesh objectMesh;
@@ -54,9 +66,9 @@ int main()
     float cameraRollZAxis = 0*M_PI/180; //
     float cameraPitchXAxis = (90-54.7)*M_PI/180; // 45
     float cameraYawYAxis = -135*M_PI/180; //-135
-    float cameraXDistance = 0.3;
-    float cameraYDistance = 0.3;
-    float cameraZDistance = 0.3;
+    float cameraXDistance = 0.15;
+    float cameraYDistance = 0.15;
+    float cameraZDistance = 0.15;
 
     // Camera Specfic Values
     double cameraYFOVRadians = 0.38008945; //21.7775213deg //Angle represents half the field of view.
@@ -66,13 +78,24 @@ int main()
     ///////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////// Load files ////////////////////////////////////
-    pcl::io::load("./Models/Sphere_25.ply", objectMesh);
+    pcl::io::load("./Models/sphere_0-1.ply", objectMesh);
     pcl::PointCloud<pcl::PointXYZ>::Ptr objectPointCloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::PointNormal>::Ptr objectNormalCloud (new pcl::PointCloud<pcl::PointNormal>);
 
     // Extract Point and Normal cloud from the mesh file. Storing them seperatley.
     pcl::fromPCLPointCloud2(objectMesh.cloud,*objectPointCloud);
     pcl::fromPCLPointCloud2(objectMesh.cloud,*objectNormalCloud); // Will throw a terminal warning if object_mesh doesn't contain curvature data. Can be ignored.
+
+    // Check to see if the objectNormalCloud has normals, extracted from objectMesh.
+    if(objectNormalCloud->at(0).normal_x == 0 && objectNormalCloud->at(0).normal_y == 0 && objectNormalCloud->at(0).normal_z == 0 )
+    {
+        cout << "\033[1;31m ********************************************\033[0m" << endl;
+        cout << "\033[1;31m ********************************************\033[0m" << endl;
+        cout << "\033[1;31m !!Check for Normals in the objectMesh file!!\033[0m" << endl;
+        cout << "\033[1;31m ********************************************\033[0m" << endl;
+        cout << "\033[1;31m ********************************************\033[0m" << endl;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////// Create the camera point cloud //////////////////////////
@@ -538,6 +561,8 @@ int main()
     float alpha;
     float beta;
     float gamma;
+    std::vector<float> phiValues;
+
 
     // The point at which the line from the camera focalpoint intersects the face of object_mesh
     for (face = objectMesh.polygons.begin(); face != objectMesh.polygons.end(); face++)
@@ -571,20 +596,22 @@ int main()
         u2.z = p3.z - p1.z;
 
         // Compute the cross product between the two vectors. This calculate the equation of the plane. u3[0] = a, u3[1] = b, u3[2] = c, u3[3] = d
-        // Also the normal to the plane.
-        float u3[2];
-        u3[0] = u1.y*u2.z - u1.z*u2.y;  // plane component a
-        u3[1] = u1.z*u2.x - u1.x*u2.z;  // plane component b
-        u3[2] = u1.x*u2.y - u1.y*u2.x;  // plane component c
+        // Also the normal to the plapcl::PointXYZne.
+        pcl::PointXYZ u3; //pcl::PointXYZ not pcl::PointNormal so the same function can be used twice.
+        u3.x = u1.y*u2.z - u1.z*u2.y;  // plane component a
+        u3.y = u1.z*u2.x - u1.x*u2.z;  // plane component b
+        u3.z = u1.x*u2.y - u1.y*u2.x;  // plane component c
 
         // Calculate face surface area.
-        float u1u2dot = (u1.x * u2.x + u1.y * u2.y + u1.z * u2.z);
+        float u1u2angle = dotProductAngle(u1, u2);
         float u1Magnitude = sqrt(pow(u1.x,2) + pow(u1.y,2) + pow(u1.z,2));
         float u2Magnitude = sqrt(pow(u2.x,2) + pow(u2.y,2) + pow(u2.z,2));
-        float u1u2angle = acos(u1u2dot / (u1Magnitude*u2Magnitude));
         float faceArea = 0.5*(u1Magnitude*u2Magnitude)*sin(u1u2angle);
 
         int pointIntersectionCounter = 0;
+
+        phiValues.clear(); // Ensure empty vector varaible before counting the ray phi angles.
+
         // Work through all rays, to find which intersect and are contained within the area of the 3 coordinates.
         for(pixelGrid_Iterator = pixelGridCloud->points.begin(); pixelGrid_Iterator != pixelGridCloud->end(); pixelGrid_Iterator++)
         {
@@ -595,9 +622,9 @@ int main()
             pointPixelGrid.y = (pixelGrid_Iterator->y) ;// sqrt(pow(pixelGrid_Iterator->x,2)+pow(pixelGrid_Iterator->y,2)+pow(pixelGrid_Iterator->z,2));
             pointPixelGrid.z = (pixelGrid_Iterator->z) ;// sqrt(pow(pixelGrid_Iterator->x,2)+pow(pixelGrid_Iterator->y,2)+pow(pixelGrid_Iterator->z,2));
 
-            float d_top = p1.x * u3[0] + p1.y * u3[1] + p1.z * u3[2];
+            float d_top = p1.x * u3.x + p1.y * u3.y + p1.z * u3.z;
             // If d_top is 0 then then every point on the line intersect the plane, i.e. the line fits in the plane.
-            float d_bottom = pointPixelGrid.x*u3[0] + pointPixelGrid.y*u3[1] + pointPixelGrid.z*u3[2];
+            float d_bottom = pointPixelGrid.x*u3.x + pointPixelGrid.y*u3.y + pointPixelGrid.z*u3.z;
             // If d_bottom is 0 then the line is parallel to the plane, this may not occur as backface culling should already have removed these occurances.
             float d = d_top / d_bottom;
 
@@ -622,18 +649,19 @@ int main()
             if(isIntersected)
             {
                 intersectedPoints->push_back(p);
+                phiValues.push_back(dotProductAngle(pointPixelGrid,u3)*180/M_PI);
             }
             pointIntersectionCounter++;
         }
         // Choose which points to keep or not.
         float perfectPointDensity = pointIntersectionCounter/(faceArea*1000000);
-        float pointProbability = pointsPerMM2 / perfectPointDensity;
 
         for(int iCounter = 0; iCounter < intersectedPoints->points.size(); iCounter++)
         {
             bool isSuccessfull = true;
+            float pointProbability = (pointCountWhiteSample(phiValues[iCounter])/(M_PI*pow((53/2)*cos(phiValues[iCounter]*M_PI/180),2))) / perfectPointDensity;
 
-            float randomNumberGenerator = ((double) rand() / (RAND_MAX));
+            float randomNumberGenerator = ((double) rand() / (RAND_MAX)); // Random Number Generator between 0 and 1.
 
             isSuccessfull = isSuccessfull && (randomNumberGenerator <= pointProbability);
 
@@ -648,7 +676,7 @@ int main()
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Create the visualizer
-    pcl::visualization::PCLVisualizer viewerFour ("Visualize the actual scene");
+    pcl::visualization::PCLVisualizer viewerFour ("Visualize the simulated scene");
 
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> selectedPointsColorHandler (selectedPoints, 255, 0, 255);
 
