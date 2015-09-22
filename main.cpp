@@ -28,7 +28,7 @@ using namespace std;
 
 float pointCountWhiteSample(float x)
 {
-    float p1 = 7.629e-05;
+    float p1 = 0.00007629;
     float p2 = -0.0002461;
     float p3 = -0.8901;
     float p4 = 1.343;
@@ -52,11 +52,6 @@ float dotProductAngle(pcl::PointXYZ p1, pcl::PointXYZ p2)
 int main()
 {
     // Temporary Variables - For testing purposes only, shouldn't be here in release code.
-    float pointsPerfectPerMM2 = 1.3;
-    // Above value is only at a certain distance.
-    // Need to choose a distance and then project small area's back agains the samt distance plane.
-    // The number of points per mm^2 can then be used to calculate the perfect number of points.
-
     /// Future Changes Required:
     /// -Number of points layed needs to vary with camera distance from the object, further away less points etc.
 
@@ -69,9 +64,9 @@ int main()
     float cameraRollZAxis = 0*M_PI/180; //
     float cameraPitchXAxis = (90-54.7)*M_PI/180; // 45
     float cameraYawYAxis = -135*M_PI/180; //-135
-    float cameraXDistance = 0.16;
-    float cameraYDistance = 0.16;
-    float cameraZDistance = 0.16;
+    float cameraXDistance = 0.346;
+    float cameraYDistance = 0.346;
+    float cameraZDistance = 0.346;
 
     // Camera Specfic Values
     double cameraYFOVRadians = 0.38008945; //21.7775213deg //Angle represents half the field of view.
@@ -334,7 +329,7 @@ int main()
         }
     }
 
-    // Define locations for each cornet of the frustum.
+    // Define locations for each corner of the frustum.
     pcl::PointXYZ frustumBottomRight;
     frustumBottomRight.x = -pixelGridHorizontalWidthHalf;
     frustumBottomRight.y = -pixelGridVerticalWidthHalf;
@@ -657,9 +652,10 @@ int main()
             {
                 intersectedPoints->push_back(p);
                 totalIntersectedPoints->push_back(p);
-                phiValues.push_back(dotProductAngle(pointPixelGrid,u3)*180/M_PI);
+                phiValues.push_back((dotProductAngle(pointPixelGrid,u3)*180/M_PI));
+                pointIntersectionCounter++;
+
             }
-            pointIntersectionCounter++;
         }
         // Choose which points to keep or not.
         float perfectPointDensity = pointIntersectionCounter/(faceArea*1000000);
@@ -667,7 +663,11 @@ int main()
         for(int iCounter = 0; iCounter < intersectedPoints->points.size(); iCounter++)
         {
             bool isSuccessfull = true;
-            float pointProbability = (pointCountWhiteSample(phiValues[iCounter])/(M_PI*pow((53/2)*cos(phiValues[iCounter]*M_PI/180),2))) / perfectPointDensity;
+            float rProjected = (53/2)*cos(phiValues[iCounter]*M_PI/180);
+            float areaProjected = pow(rProjected,2)*M_PI;
+            float realTotalPointCount = pointCountWhiteSample(phiValues[iCounter]);
+            float realPointDensity = realTotalPointCount / areaProjected;
+            float pointProbability = realPointDensity / perfectPointDensity;
 
             float randomNumberGenerator = ((double) rand() / (RAND_MAX)); // Random Number Generator between 0 and 1.
 
