@@ -34,9 +34,9 @@ float pointCountWhiteSample(float x)
     float p4 = 1.343;
     float p5 = 2968;
 
-    float thetaOutput = p1*pow(x,4) + p2*pow(x,3) + p3*pow(x,2) + p4*x + p5;
+    float pointCountOutput = p1*pow(x,4) + p2*pow(x,3) + p3*pow(x,2) + p4*x + p5;
 
-    return thetaOutput;
+    return pointCountOutput;
 }
 
 float dotProductAngle(pcl::PointXYZ p1, pcl::PointXYZ p2)
@@ -46,7 +46,7 @@ float dotProductAngle(pcl::PointXYZ p1, pcl::PointXYZ p2)
     float p2Magnitude = sqrt(pow(p2.x,2) + pow(p2.y,2) + pow(p2.z,2));
     float p1p2angle = acos(p1p2dot / (p1Magnitude*p2Magnitude));
 
-    return p1p2angle;
+    return p1p2angle;   // In radians
 }
 
 int main()
@@ -57,18 +57,21 @@ int main()
     // Need to choose a distance and then project small area's back agains the samt distance plane.
     // The number of points per mm^2 can then be used to calculate the perfect number of points.
 
+    /// Future Changes Required:
+    /// -Number of points layed needs to vary with camera distance from the object, further away less points etc.
+
     //////////////////////////// Initialize the variables /////////////////////////////
     pcl::PolygonMesh objectMesh;
 
-    double pixelGridDistance = 0.5;
+    double pixelGridDistance = 2;
 
     // Camera roll,pitch and yaw - relative to WCS
     float cameraRollZAxis = 0*M_PI/180; //
     float cameraPitchXAxis = (90-54.7)*M_PI/180; // 45
     float cameraYawYAxis = -135*M_PI/180; //-135
-    float cameraXDistance = 0.15;
-    float cameraYDistance = 0.15;
-    float cameraZDistance = 0.15;
+    float cameraXDistance = 0.16;
+    float cameraYDistance = 0.16;
+    float cameraZDistance = 0.16;
 
     // Camera Specfic Values
     double cameraYFOVRadians = 0.38008945; //21.7775213deg //Angle represents half the field of view.
@@ -92,6 +95,7 @@ int main()
         cout << "\033[1;31m ********************************************\033[0m" << endl;
         cout << "\033[1;31m ********************************************\033[0m" << endl;
         cout << "\033[1;31m !!Check for Normals in the objectMesh file!!\033[0m" << endl;
+        cout << "\033[1;31m !!!Backface culling may have been skipped!!!\033[0m" << endl;
         cout << "\033[1;31m ********************************************\033[0m" << endl;
         cout << "\033[1;31m ********************************************\033[0m" << endl;
     }
@@ -104,7 +108,7 @@ int main()
     if (!boost::filesystem::exists("./Models/cameraCloudOne.pcd"))
     {
         cameraCloudOne->width = 1;
-        cameraCloudOne->height = 8;
+        cameraCloudOne->height = 9;
         cameraCloudOne->is_dense = false;
         cameraCloudOne->points.resize(cameraCloudOne->width * cameraCloudOne->height);
 
@@ -112,33 +116,37 @@ int main()
         cameraCloudOne->points[0].y = 0.0;
         cameraCloudOne->points[0].z = 0.0;
 
-        cameraCloudOne->points[1].x = 0.1;
-        cameraCloudOne->points[1].y = 0.05;
+        cameraCloudOne->points[1].x = 0.025;
+        cameraCloudOne->points[1].y = 0.01;
         cameraCloudOne->points[1].z = 0.0;
 
-        cameraCloudOne->points[2].x = -0.1;
-        cameraCloudOne->points[2].y = 0.05;
+        cameraCloudOne->points[2].x = -0.025;
+        cameraCloudOne->points[2].y = 0.01;
         cameraCloudOne->points[2].z = 0.0;
 
-        cameraCloudOne->points[3].x = 0.1;
-        cameraCloudOne->points[3].y = -0.05;
+        cameraCloudOne->points[3].x = 0.025;
+        cameraCloudOne->points[3].y = -0.01;
         cameraCloudOne->points[3].z = 0.0;
 
-        cameraCloudOne->points[4].x = -0.1;
-        cameraCloudOne->points[4].y = -0.05;
+        cameraCloudOne->points[4].x = -0.025;
+        cameraCloudOne->points[4].y = -0.01;
         cameraCloudOne->points[4].z = 0.0;
 
         cameraCloudOne->points[5].x = 0.0;
         cameraCloudOne->points[5].y = 0.0;
-        cameraCloudOne->points[5].z = 0.05;
+        cameraCloudOne->points[5].z = 0.01;
 
         cameraCloudOne->points[6].x = 0.0;
         cameraCloudOne->points[6].y = 0.0;
-        cameraCloudOne->points[6].z = 0.1;
+        cameraCloudOne->points[6].z = 0.025;
 
         cameraCloudOne->points[7].x = 0.0;
         cameraCloudOne->points[7].y = 0.0;
-        cameraCloudOne->points[7].z = -0.05;
+        cameraCloudOne->points[7].z = -0.01;
+
+        cameraCloudOne->points[8].x = 0.0;
+        cameraCloudOne->points[8].y = 0.01;
+        cameraCloudOne->points[8].z = 0.0;
 
         pcl::io::savePCDFile("./Models/cameraCloudOne.pcd", *cameraCloudOne);
     }
@@ -554,7 +562,7 @@ int main()
     //////////////////////// Adding Points to the surfaces  ///////////////////////////
     pcl::fromPCLPointCloud2(objectMesh.cloud,*objectPointCloud);
     pcl::PointCloud<pcl::PointXYZ>::Ptr selectedPoints (new (pcl::PointCloud<pcl::PointXYZ>));
-
+    pcl::PointCloud<pcl::PointXYZ>::Ptr totalIntersectedPoints (new (pcl::PointCloud<pcl::PointXYZ>));
     pcl::PointCloud<pcl::PointXYZ>::iterator pixelGrid_Iterator;  // Each point in the pixelgrid of the camera
     pcl::PointXYZ p; // The point of intersection of a plane and the line.
     pcl::PointXYZ pointPixelGrid;
@@ -562,7 +570,6 @@ int main()
     float beta;
     float gamma;
     std::vector<float> phiValues;
-
 
     // The point at which the line from the camera focalpoint intersects the face of object_mesh
     for (face = objectMesh.polygons.begin(); face != objectMesh.polygons.end(); face++)
@@ -649,6 +656,7 @@ int main()
             if(isIntersected)
             {
                 intersectedPoints->push_back(p);
+                totalIntersectedPoints->push_back(p);
                 phiValues.push_back(dotProductAngle(pointPixelGrid,u3)*180/M_PI);
             }
             pointIntersectionCounter++;
@@ -671,16 +679,16 @@ int main()
             }
         }
     }
-    //pcl::io::savePCDFileASCII("./Models/intersectedPointCloud.pcd",*intersectedPoints);
+    pcl::io::savePCDFileASCII("./Models/totalIntersectedPointCloud.pcd",*totalIntersectedPoints);
     pcl::io::savePCDFileASCII("./Models/selectedPointCloud.pcd",*selectedPoints);
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Create the visualizer
     pcl::visualization::PCLVisualizer viewerFour ("Visualize the simulated scene");
 
-    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> selectedPointsColorHandler (selectedPoints, 255, 0, 255);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> totalIntersectedPointsColorHandler (totalIntersectedPoints, 255, 0, 255);
 
-    viewerFour.addPointCloud(selectedPoints, selectedPointsColorHandler, "selectedPoints");
+    viewerFour.addPointCloud(totalIntersectedPoints, totalIntersectedPointsColorHandler, "totalIntersectedPoints");
 
     // Add the point cloud to the viewer and pass the color handler
     viewerFour.addPointCloud(cameraCloudOne, cameraColorHandlerVirtualView, "VirtualCameraOne");
@@ -720,6 +728,54 @@ int main()
       viewerFour.spinOnce ();
     }
     viewerFour.close();
+
+
+    // View just the selected points
+    // Create the visualizer
+    pcl::visualization::PCLVisualizer viewerFive ("Visualize the simulated scene");
+
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> selectedPointsColorHandler (selectedPoints, 255, 0, 255);
+
+    viewerFive.addPointCloud(selectedPoints, selectedPointsColorHandler, "selectedPoints");
+
+    // Add the point cloud to the viewer and pass the color handler
+    viewerFive.addPointCloud(cameraCloudOne, cameraColorHandlerVirtualView, "VirtualCameraOne");
+
+    // Set size of the origin point cloud
+    viewerFive.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 10, "VirtualCameraOne");
+
+    /// Add pixelGridCloud Points ///
+    //Represent pixelGridCloud
+    //viewerFive.addPointCloud(pixelGridCloud, pixelGridColorHandler, "pixelGridCloud");
+    viewerFive.addLine(frustumBottomRight,frustumTopRight,"rightSide",0);
+    viewerFive.addLine(frustumTopRight,frustumTopLeft,"topSide",0);
+    viewerFive.addLine(frustumTopLeft,frustumBottomLeft,"leftSide",0);
+    viewerFive.addLine(frustumBottomLeft,frustumBottomRight,"bottomSide",0);
+
+    //Draw frustum itself.
+    viewerFive.addLine(pcl::PointXYZ(0,0,0),frustumTopRight,"topRight",0);
+    viewerFive.addLine(pcl::PointXYZ(0,0,0),frustumTopLeft,"topLeft",0);
+    viewerFive.addLine(pcl::PointXYZ(0,0,0),frustumBottomLeft,"bottomLeft",0);
+    viewerFive.addLine(pcl::PointXYZ(0,0,0),frustumBottomRight,"bottomRight",0);
+
+    // Add label to origin for x,y,z point position.
+    viewerFive.addText3D("+X",xTextVirtualView,0.1,1.0,1.0,1.0,"x",0);
+    viewerFive.addLine(pcl::PointXYZ(0,0,0),pcl::PointXYZ(2,0,0),"line_x",0);
+
+    viewerFive.addText3D("+Y",yTextVirtualView,0.1,1.0,1.0,1.0,"y",0);
+    viewerFive.addLine(pcl::PointXYZ(0,0,0),pcl::PointXYZ(0,2,0),"line_y",0);
+
+    viewerFive.addText3D("+Z",zTextVirtualView,0.1,1.0,1.0,1.0,"z",0);
+    viewerFive.addLine(pcl::PointXYZ(0,0,0),pcl::PointXYZ(0,0,2),"line_z",0);
+
+    viewerFive.setCameraClipDistances(5.0,20.0);
+    viewerFive.setCameraPosition(0,0,-10, 0,1,0, 0);
+
+    // Display the visualiser until 'q' key is pressed
+    while (!viewerFive.wasStopped ()) {
+      viewerFive.spinOnce ();
+    }
+    viewerFive.close();
 #endif
 
 }
