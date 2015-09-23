@@ -26,7 +26,7 @@ using namespace std;
 #define VIRTUAL_VIEW_BACKFACE_AND_FRUSTUM_CULLING
 #define VIRTUAL_VIEW_INTERSECTED_POINTS
 
-float pointCountWhiteSample(float x)
+float pointCountSampleWhite(float x)
 {
     float p1 = 0.00007629;
     float p2 = -0.0002461;
@@ -35,6 +35,105 @@ float pointCountWhiteSample(float x)
     float p5 = 2968;
 
     float pointCountOutput = p1*pow(x,4) + p2*pow(x,3) + p3*pow(x,2) + p4*x + p5;
+
+    return pointCountOutput;
+}
+
+float pointCountSample10(float x)
+{
+    float a1 =        2662;
+    float b1 =     0.02081;
+    float c1 =       1.559;
+    float a2 =       282.1;
+    float b2 =       0.134;
+    float c2 =       -1.74;
+    float a3 =       254.5;
+    float b3 =      0.2276;
+    float c3 =      -1.874;
+    float a4 =       135.2;
+    float b4 =      0.4265;
+    float c4 =      -2.168;
+    float a5 =       197.4;
+    float b5 =      0.3263;
+    float c5 =      -2.033;
+    float a6 =       86.56;
+    float b6 =      0.5273;
+    float c6 =      -2.289;
+    float a7 =       48.85;
+    float b7 =      0.6264;
+    float c7 =      -2.364;
+
+    float pointCountOutput = a1*sin((b1*x+c1)*M_PI/180) + a2*sin((b2*x+c2)*M_PI/180) + a3*sin((b3*x+c3)*M_PI/180) +
+                             a4*sin((b4*x+c4)*M_PI/180) + a5*sin((b5*x+c5)*M_PI/180) + a6*sin((b6*x+c6)*M_PI/180) +
+                             a7*sin((b7*x+c7)*M_PI/180);
+
+    return pointCountOutput;
+}
+
+float pointCountSample11(float x)
+{
+    float a1 =        4664;
+    float b1 =      0.0283;
+    float c1 =       1.594;
+    float a2 =       535.4;
+    float b2 =      0.1257;
+    float c2 =      -1.944;
+    float a3 =       69.65;
+    float b3 =      0.1917;
+    float c3 =      0.0745;
+    float a4 =       293.8;
+    float b4 =      0.3017;
+    float c4 =      -2.256;
+    float a5 =        2066;
+    float b5 =     0.03184;
+    float c5 =      -1.468;
+    float a6 =       332.4;
+    float b6 =      0.2138;
+    float c6 =      -2.076;
+    float a7 =       92.75;
+    float b7 =       0.491;
+    float c7 =      -2.554;
+    float a8 =       178.7;
+    float b8 =      0.3954;
+    float c8 =      -2.327;
+
+    float pointCountOutput = a1*sin((b1*x+c1)*M_PI/180) + a2*sin((b2*x+c2)*M_PI/180) + a3*sin((b3*x+c3)*M_PI/180) +
+                             a4*sin((b4*x+c4)*M_PI/180) + a5*sin((b5*x+c5)*M_PI/180) + a6*sin((b6*x+c6)*M_PI/180) +
+                             a7*sin((b7*x+c7)*M_PI/180) + a8*sin((b8*x+c8)*M_PI/180);
+
+    return pointCountOutput;
+}
+
+float pointCountSample12(float x)
+{
+    float a1 =        2409;
+    float b1 =      0.0371;
+    float c1 =       1.567;
+    float a2 =       561.1;
+    float b2 =      0.1234;
+    float c2 =       1.545;
+    float a3 =       459.4;
+    float b3 =      0.1804;
+    float c3 =       4.501;
+    float a4 =       222.9;
+    float b4 =      0.2726;
+    float c4 =      -1.719;
+    float a5 =       79.81;
+    float b5 =       0.393;
+    float c5 =      -2.228;
+    float a6 =       83.85;
+    float b6 =      0.4911;
+    float c6 =      -2.356;
+    float a7 =       49.02;
+    float b7 =      0.6803;
+    float c7 =      -3.163;
+    float a8 =       42.91;
+    float b8 =      0.5886;
+    float c8 =      -2.828;
+
+    float pointCountOutput = a1*sin((b1*x+c1)*M_PI/180) + a2*sin((b2*x+c2)*M_PI/180) + a3*sin((b3*x+c3)*M_PI/180) +
+                             a4*sin((b4*x+c4)*M_PI/180) + a5*sin((b5*x+c5)*M_PI/180) + a6*sin((b6*x+c6)*M_PI/180) +
+                             a7*sin((b7*x+c7)*M_PI/180) + a8*sin((b8*x+c8)*M_PI/180);
 
     return pointCountOutput;
 }
@@ -76,7 +175,7 @@ int main()
     ///////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////// Load files ////////////////////////////////////
-    pcl::io::load("./Models/sphere_0-1.ply", objectMesh);
+    pcl::io::load("./Models/sphere_0-05_precise.ply", objectMesh);
     pcl::PointCloud<pcl::PointXYZ>::Ptr objectPointCloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::PointNormal>::Ptr objectNormalCloud (new pcl::PointCloud<pcl::PointNormal>);
 
@@ -598,7 +697,7 @@ int main()
         u2.z = p3.z - p1.z;
 
         // Compute the cross product between the two vectors. This calculate the equation of the plane. u3[0] = a, u3[1] = b, u3[2] = c, u3[3] = d
-        // Also the normal to the plapcl::PointXYZne.
+        // Also the normal to the plane.
         pcl::PointXYZ u3; //pcl::PointXYZ not pcl::PointNormal so the same function can be used twice.
         u3.x = u1.y*u2.z - u1.z*u2.y;  // plane component a
         u3.y = u1.z*u2.x - u1.x*u2.z;  // plane component b
@@ -650,9 +749,16 @@ int main()
             // If isIntersected is True, collect the points in instersectedPoints.
             if(isIntersected)
             {
-                intersectedPoints->push_back(p);
                 totalIntersectedPoints->push_back(p);
-                phiValues.push_back((dotProductAngle(pointPixelGrid,u3)*180/M_PI));
+                intersectedPoints->push_back(p);
+                phiValues.push_back(180-(dotProductAngle(pointPixelGrid,u3)*180/M_PI));
+                if((180-(dotProductAngle(pointPixelGrid,u3)*180/M_PI)) >= 90)
+                {
+                    cout << "angle greater than 90" << endl;
+                    break;
+                }
+//                cout << pointPixelGrid.x << " " << pointPixelGrid.y << " " <<pointPixelGrid.z << endl;
+//                cout << u3.x << " " << u3.y << " " << u3.z << endl;
                 pointIntersectionCounter++;
 
             }
@@ -662,20 +768,28 @@ int main()
 
         for(int iCounter = 0; iCounter < intersectedPoints->points.size(); iCounter++)
         {
-            bool isSuccessfull = true;
-            float rProjected = (53/2)*cos(phiValues[iCounter]*M_PI/180);
-            float areaProjected = pow(rProjected,2)*M_PI;
-            float realTotalPointCount = pointCountWhiteSample(phiValues[iCounter]);
-            float realPointDensity = realTotalPointCount / areaProjected;
-            float pointProbability = realPointDensity / perfectPointDensity;
+            bool isUnderMaxAngle = true;
 
-            float randomNumberGenerator = ((double) rand() / (RAND_MAX)); // Random Number Generator between 0 and 1.
+            isUnderMaxAngle = isUnderMaxAngle && (phiValues[iCounter] <= 55);
 
-            isSuccessfull = isSuccessfull && (randomNumberGenerator <= pointProbability);
-
-            if(isSuccessfull)
+            if(isUnderMaxAngle)
             {
-                selectedPoints->push_back(intersectedPoints->points[iCounter]);
+                bool isSuccessfull = true;
+                float rProjected = (53/2);
+                float areaProjected = pow(rProjected,2)*M_PI*cos(phiValues[iCounter]*M_PI/180);
+                float realTotalPointCount = pointCountSample10(phiValues[iCounter]);
+                float realPointDensity = realTotalPointCount / areaProjected;
+                float pointProbability = realPointDensity / perfectPointDensity;
+
+                float randomNumberGenerator = ((double) rand() / (RAND_MAX)); // Random Number Generator between 0 and 1.
+
+                isSuccessfull = isSuccessfull && (randomNumberGenerator <= pointProbability);
+
+                if(isSuccessfull)
+                {
+
+                    selectedPoints->push_back(intersectedPoints->points[iCounter]);
+                }
             }
         }
     }
