@@ -3,6 +3,7 @@
 #include <boost/random.hpp>
 #include <boost/random/normal_distribution.hpp>
 #include <time.h>
+#include <ctime> // For tic toc.
 
 // Input / Output header files.
 #include <pcl/io/ply_io.h>
@@ -168,10 +169,7 @@ int main()
     // Temporary Variables - For testing purposes only, shouldn't be here in release code.
     /// Future Changes Required:
     /// -Number of points layed needs to vary with camera distance from the object, further away less points etc.
-    boost::mt19937 generator;
-    generator.seed(time(0));
-    boost::normal_distribution<> norm_dist(0.002,0.001);
-    boost::variate_generator<boost::mt19937&,boost::normal_distribution<> > norm_rnd(generator, norm_dist);
+
 //    cout << norm_rnd() << endl;
 //    cout << norm_rnd() << endl;
 //    cout << norm_rnd() << endl;
@@ -182,6 +180,8 @@ int main()
 //    cout << norm_rnd() << endl;
 //    cout << norm_rnd() << endl;
 
+    time_t tstart,tend;
+    tstart = time(0);
     //////////////////////////// Initialize the variables /////////////////////////////
     pcl::PolygonMesh objectMesh;
 
@@ -202,11 +202,17 @@ int main()
     double cameraHorizontalPixels = 752;
 
     // Sample Specific
-    std::string sampleSelector = "10";
+    std::string sampleSelector = "white";
+
+    // Initialize normal distribution values;
+    boost::mt19937 generator;
+    generator.seed(time(0));
+    boost::normal_distribution<> norm_dist(0.002,0.001);
+    boost::variate_generator<boost::mt19937&,boost::normal_distribution<> > norm_rnd(generator, norm_dist);
     ///////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////// Load files ////////////////////////////////////
-    pcl::io::load("./Models/sphere_0-05_precise.ply", objectMesh);
+    pcl::io::load("./Models/sphere_0-05_2520.ply", objectMesh);
     pcl::PointCloud<pcl::PointXYZ>::Ptr objectPointCloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::PointNormal>::Ptr objectNormalCloud (new pcl::PointCloud<pcl::PointNormal>);
 
@@ -703,10 +709,12 @@ int main()
     float beta;
     float gamma;
     std::vector<float> phiValues;
+    float totalFaceArea = 0;
 
     // The point at which the line from the camera focalpoint intersects the face of object_mesh
     for (face = objectMesh.polygons.begin(); face != objectMesh.polygons.end(); face++)
     {
+
         pcl::PointCloud<pcl::PointXYZ>::Ptr intersectedPoints (new (pcl::PointCloud<pcl::PointXYZ>));
 
         // Find the vertices of each face.
@@ -747,6 +755,8 @@ int main()
         float u1Magnitude = sqrt(pow(u1.x,2) + pow(u1.y,2) + pow(u1.z,2));
         float u2Magnitude = sqrt(pow(u2.x,2) + pow(u2.y,2) + pow(u2.z,2));
         float faceArea = 0.5*(u1Magnitude*u2Magnitude)*sin(u1u2angle);
+
+        totalFaceArea = totalFaceArea + faceArea;
 
         int pointIntersectionCounter = 0;
 
@@ -827,9 +837,7 @@ int main()
 
                 if(isSuccessfull)
                 {
-
                     selectedPoints->push_back(intersectedPoints->points[iCounter]);
-
 
                     float intersectedPixelGridLocationsMagnitude = sqrt(pow(intersectedPixelGridLocations->points[iCounter].x,2)+
                                                                         pow(intersectedPixelGridLocations->points[iCounter].y,2)+
@@ -853,6 +861,8 @@ int main()
     pcl::io::savePCDFileASCII("./Models/totalIntersectedPointCloud.pcd",*totalIntersectedPoints);
     pcl::io::savePCDFileASCII("./Models/selectedPointCloud.pcd",*selectedPoints);
     pcl::io::savePCDFileASCII("./Models/selectedNoisyPointCloud.pcd",*selectedNoisyPoints);
+
+    cout << "Average points/mm^2 = " << selectedPoints->points.size() / (totalFaceArea*1000000) << "p/mm^2" << endl;
 
     ///////////////////////////////////////////////////////////////////////////////////
 #ifdef VIRTUAL_VIEW_INTERSECTED_POINTS
@@ -995,11 +1005,15 @@ int main()
     viewerSix.setCameraClipDistances(5.0,20.0);
     viewerSix.setCameraPosition(0,0,-10, 0,1,0, 0);
 
+    tend = time(0);
+    cout << "It took " << difftime(tend,tstart) << " second(s)." << endl;
+
     // Display the visualiser until 'q' key is pressed
     while (!viewerSix.wasStopped ()) {
       viewerSix.spinOnce ();
     }
     viewerSix.close();
 #endif
+
 
 }
