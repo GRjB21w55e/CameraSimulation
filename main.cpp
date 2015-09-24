@@ -5,33 +5,32 @@
 #include <time.h>
 #include <ctime> // For tic toc.
 
-// Input / Output header files.
+// Input / Output
 #include <pcl/io/ply_io.h>
 #include <pcl/io/vtk_io.h>
 #include <pcl/io/pcd_io.h>
 
-// For creating the origin cloud.
+// For XYZ and Normal Point types
 #include <pcl/point_types.h>
 
 // For rotation/translation
 #include <pcl/common/transforms.h>
 
-// Visualizer header files.
+// Visualizer
 #include <pcl/visualization/pcl_visualizer.h>
 
-// Removing unused vertices
+// Removing unused vertices in the new objectMesh file after faces have been removed.
 #include <pcl/surface/simplification_remove_unused_vertices.h>
-
 
 using namespace std;
 
-//#define ACTUAL_VIEW
-//#define VIRTUAL_VIEW
-//#define VIRTUAL_VIEW_BACKFACE_AND_FRUSTUM_CULLING
-//#define VIRTUAL_VIEW_INTERSECTED_POINTS
-//#define VIRTUAL_VIEW_SELECTED_POINTS
+// Comment out the view's you'd like to see.
+#define ACTUAL_VIEW
+#define VIRTUAL_VIEW
+#define VIRTUAL_VIEW_BACKFACE_AND_FRUSTUM_CULLING
+#define VIRTUAL_VIEW_INTERSECTED_POINTS
+#define VIRTUAL_VIEW_SELECTED_POINTS
 #define VIRTUAL_VIEW_SELECTED_NOISY_POINTS
-
 
 float pointCountSample(float x, std::string sample_name)
 {
@@ -164,24 +163,161 @@ float dotProductAngle(pcl::PointXYZ p1, pcl::PointXYZ p2)
     return p1p2angle;   // In radians
 }
 
+float standardDeviationSample(float x, std::string sample_name)
+{
+    if(sample_name == "white")
+    {
+        float a1 =       1.931;
+        float b1 =     0.02273;
+        float c1 =       2.007;
+        float a2 =       1.386;
+        float b2 =      0.0306;
+        float c2 =      -1.183;
+        float a3 =     0.04071;
+        float b3 =      0.1141;
+        float c3 =      0.8389;
+        float a4 =     0.02759;
+        float b4 =      0.1745;
+        float c4 =      -3.005;
+        float a5 =    0.009805;
+        float b5 =      0.4125;
+        float c5 =      -1.775;
+        float a6 =     0.01978;
+        float b6 =      0.3416;
+        float c6 =      -2.255;
+        float a7 =    0.003355;
+        float b7 =      0.2887;
+        float c7 =      -2.292;
+        float a8 =     0.03107;
+        float b8 =      0.2062;
+        float c8 =     -0.7186;
+
+        float standardDeviation = a1*sin((b1*x+c1)*M_PI/180) + a2*sin((b2*x+c2)*M_PI/180) + a3*sin((b3*x+c3)*M_PI/180) +
+                                  a4*sin((b4*x+c4)*M_PI/180) + a5*sin((b5*x+c5)*M_PI/180) + a6*sin((b6*x+c6*M_PI/180)) +
+                                  a7*sin((b7*x+c7)*M_PI/180) + a8*sin((b8*x+c8)*M_PI/180);
+
+        return standardDeviation/1000;
+    }
+    else if(sample_name == "10")
+    {
+        float a1 =       1.728;
+        float b1 =     0.02705;
+        float c1 =       1.667;
+        float a2 =      0.9667;
+        float b2 =      0.1017;
+        float c2 =        1.47;
+        float a3 =       1.052;
+        float b3 =     0.06318;
+        float c3 =      -1.549;
+        float a4 =      0.3054;
+        float b4 =      0.1951;
+        float c4 =       2.817;
+        float a5 =       0.512;
+        float b5 =      0.1936;
+        float c5 =      0.6825;
+        float a6 =       0.131;
+        float b6 =      0.3675;
+        float c6 =       1.199;
+        float a7 =      0.2511;
+        float b7 =      0.2799;
+        float c7 =        1.24;
+        float a8 =     0.06629;
+        float b8 =      0.4458;
+        float c8 =       1.179;
+
+        float standardDeviation = a1*sin((b1*x+c1))*M_PI/180 + a2*sin((b2*x+c2))*M_PI/180 + a3*sin((b3*x+c3))*M_PI/180 +
+                                  a4*sin((b4*x+c4))*M_PI/180 + a5*sin((b5*x+c5))*M_PI/180 + a6*sin((b6*x+c6))*M_PI/180 +
+                                  a7*sin((b7*x+c7))*M_PI/180 + a8*sin((b8*x+c8))*M_PI/180;
+
+        return standardDeviation/1000;
+    }
+    else if(sample_name == "11")
+    {
+        float a1 =       2.209;
+        float b1 =     0.02935;
+        float c1 =       1.599;
+        float a2 =       1.264;
+        float b2 =     0.06456;
+        float c2 =      -1.651;
+        float a3 =      0.8475;
+        float b3 =      0.1355;
+        float c3 =       1.277;
+        float a4 =      -19.58;
+        float b4 =      0.2304;
+        float c4 =       1.135;
+        float a5 =      0.2306;
+        float b5 =      0.3302;
+        float c5 =      0.7171;
+        float a6 =       0.195;
+        float b6 =       0.422;
+        float c6 =       0.591;
+        float a7 =       19.95;
+        float b7 =      0.2305;
+        float c7 =       1.135;
+        float a8 =      0.1359;
+        float b8 =      0.5282;
+        float c8 =       0.399;
+
+        float standardDeviation = a1*sin((b1*x+c1)*M_PI/180) + a2*sin((b2*x+c2)*M_PI/180) + a3*sin((b3*x+c3)*M_PI/180) +
+                                 a4*sin((b4*x+c4)*M_PI/180) + a5*sin((b5*x+c5)*M_PI/180) + a6*sin((b6*x+c6)*M_PI/180) +
+                                 a7*sin((b7*x+c7)*M_PI/180) + a8*sin((b8*x+c8)*M_PI/180);
+
+        return standardDeviation/1000;
+    }
+    else if(sample_name == "12")
+    {
+        float a1 =       2.583;
+        float b1 =     0.03152;
+        float c1 =       1.678;
+        float a2 =       1.216;
+        float b2 =     0.07536;
+        float c2 =      -1.533;
+        float a3 =      0.0266;
+        float b3 =      0.1412;
+        float c3 =      -2.626;
+        float a4 =      0.5683;
+        float b4 =       0.206;
+        float c4 =       1.271;
+        float a5 =      0.6467;
+        float b5 =      0.1777;
+        float c5 =      -1.785;
+        float a6 =      0.1618;
+        float b6 =      0.2767;
+        float c6 =      0.9291;
+        float a7 =      0.1196;
+        float b7 =      0.4122;
+        float c7 =        1.16;
+        float a8 =     0.06764;
+        float b8 =      0.6149;
+        float c8 =      0.8155;
+
+        float standardDeviation = a1*sin((b1*x+c1)*M_PI/180) + a2*sin((b2*x+c2)*M_PI/180) + a3*sin((b3*x+c3)*M_PI/180) +
+                                 a4*sin((b4*x+c4)*M_PI/180) + a5*sin((b5*x+c5)*M_PI/180) + a6*sin((b6*x+c6)*M_PI/180) +
+                                 a7*sin((b7*x+c7)*M_PI/180) + a8*sin((b8*x+c8)*M_PI/180);
+
+        return standardDeviation/1000;
+    }
+    else
+    {
+        cout << "\033[1;31m ********************************************\033[0m" << endl;
+        cout << "\033[1;31m ********************************************\033[0m" << endl;
+        cout << "\033[1;31m !!!!sampleSelector is an invalid value!!!!!!\033[0m" << endl;
+        cout << "\033[1;31m ********************************************\033[0m" << endl;
+        cout << "\033[1;31m ********************************************\033[0m" << endl;
+        exit(EXIT_FAILURE);
+    }
+}
+
 int main()
 {
-    // Temporary Variables - For testing purposes only, shouldn't be here in release code.
     /// Future Changes Required:
+    /// *Depth values make a difference to the number of points on the surface.
     /// -Number of points layed needs to vary with camera distance from the object, further away less points etc.
 
-//    cout << norm_rnd() << endl;
-//    cout << norm_rnd() << endl;
-//    cout << norm_rnd() << endl;
-//    cout << norm_rnd() << endl;
-//    cout << norm_rnd() << endl;
-//    cout << norm_rnd() << endl;
-//    cout << norm_rnd() << endl;
-//    cout << norm_rnd() << endl;
-//    cout << norm_rnd() << endl;
-
+    // Tic Toc Timer Start
     time_t tstart,tend;
     tstart = time(0);
+
     //////////////////////////// Initialize the variables /////////////////////////////
     pcl::PolygonMesh objectMesh;
 
@@ -202,13 +338,15 @@ int main()
     double cameraHorizontalPixels = 752;
 
     // Sample Specific
-    std::string sampleSelector = "white";
+    std::string sampleSelector ;//= "white";
+
+    cout << "Type the sample that will be used:" << endl;
+    cout << "Choose from: white, 10 ,11 ,12"<< endl;
+    cin >> sampleSelector;
 
     // Initialize normal distribution values;
     boost::mt19937 generator;
     generator.seed(time(0));
-    boost::normal_distribution<> norm_dist(0.002,0.001);
-    boost::variate_generator<boost::mt19937&,boost::normal_distribution<> > norm_rnd(generator, norm_dist);
     ///////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////// Load files ////////////////////////////////////
@@ -230,7 +368,6 @@ int main()
         cout << "\033[1;31m ********************************************\033[0m" << endl;
         cout << "\033[1;31m ********************************************\033[0m" << endl;
     }
-
     ///////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////// Create the camera point cloud //////////////////////////
@@ -287,7 +424,6 @@ int main()
     }
     ///////////////////////////////////////////////////////////////////////////////////
 
-
     /////////////////////////// Transform creation and use ////////////////////////////
     // Create a new point cloud variable for transformed workspace view.
     pcl::PointCloud<pcl::PointXYZ>::Ptr cameraCloudOneActualView (new pcl::PointCloud<pcl::PointXYZ>);
@@ -316,7 +452,7 @@ int main()
 
 #ifdef ACTUAL_VIEW
     // Create the visualizer
-    pcl::visualization::PCLVisualizer viewerOne ("Visualize the actual scene");
+    pcl::visualization::PCLVisualizer viewerOne ("Actual View - Object @ Origin, Camera Moved");
 
     // Add objectPointCLoudWorkspaceView and cameraCloudOne
     viewerOne.addPolygonMesh(objectMesh, "objectMesh");
@@ -488,7 +624,7 @@ int main()
 
     pcl::io::savePCDFile("./Models/pixelGridCloud.pcd", *pixelGridCloud);
     ///////////////////////////////////////////////////////////////////////////////////
-    // Global visualizer values
+    // Global visualizer values - Need to be outside of #ifdef's or they become local, used by each when they are turned on.
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cameraColorHandlerVirtualView (cameraCloudOne, 0, 0, 255);
     pcl::PointXYZ xTextVirtualView;
     xTextVirtualView.x = 2.0;
@@ -504,17 +640,16 @@ int main()
     zTextVirtualView.z = 2.0;
     //
 #ifdef VIRTUAL_VIEW
-
     // Create the visualizer
-    pcl::visualization::PCLVisualizer viewerTwo ("Visualize the actual scene");
+    pcl::visualization::PCLVisualizer viewerTwo ("Virtual View - Camera @ Origin, Object Moved");
     // Add objectPointCLoudWorkspaceView and cameraCloudOne
     viewerTwo.addPolygonMesh(objectMesh, "objectMesh");
 
     // Create a color handler for the origin point cloud - R,G,B colors
-    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cameraColorHandlerVirtualView (cameraCloudOne, 0, 0, 255);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cameraColorHandlerVirtualView2 (cameraCloudOne, 0, 0, 255);
 
     // Add the point cloud to the viewer and pass the color handler
-    viewerTwo.addPointCloud(cameraCloudOne, cameraColorHandlerVirtualView, "VirtualCameraOne");
+    viewerTwo.addPointCloud(cameraCloudOne, cameraColorHandlerVirtualView2, "VirtualCameraOne");
 
     // Set size of the origin point cloud
     viewerTwo.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 10, "VirtualCameraOne");
@@ -652,7 +787,7 @@ int main()
     ///////////////////////////////////////////////////////////////////////////////////
 #ifdef VIRTUAL_VIEW_BACKFACE_AND_FRUSTUM_CULLING
     // Create the visualizer
-    pcl::visualization::PCLVisualizer viewerThree ("Visualize the actual scene");
+    pcl::visualization::PCLVisualizer viewerThree ("Virtual View - Camera @ Origin, Object Moved, Backface&Frustum Culled");
     // Add objectPointCLoudWorkspaceView and cameraCloudOne
     viewerThree.addPolygonMesh(objectMesh, "objectMesh");
 
@@ -843,15 +978,21 @@ int main()
                                                                         pow(intersectedPixelGridLocations->points[iCounter].y,2)+
                                                                         pow(intersectedPixelGridLocations->points[iCounter].z,2));
 
+                    float sd = standardDeviationSample(phiValues[iCounter],sampleSelector);
+                    boost::normal_distribution<> norm_dist(0.0,sd);
+                    boost::variate_generator<boost::mt19937&,boost::normal_distribution<> > norm_rnd(generator, norm_dist);
+
+                    float noise = norm_rnd();
+
                     pcl::PointXYZ iPGLUnit;
                     iPGLUnit.x = intersectedPixelGridLocations->points[iCounter].x/intersectedPixelGridLocationsMagnitude;
                     iPGLUnit.y = intersectedPixelGridLocations->points[iCounter].y/intersectedPixelGridLocationsMagnitude;
                     iPGLUnit.z = intersectedPixelGridLocations->points[iCounter].z/intersectedPixelGridLocationsMagnitude;
 
                     pcl::PointXYZ noisyPoint;
-                    noisyPoint.x = intersectedPoints->points[iCounter].x + iPGLUnit.x*norm_rnd();
-                    noisyPoint.y = intersectedPoints->points[iCounter].y + iPGLUnit.y*norm_rnd();
-                    noisyPoint.z = intersectedPoints->points[iCounter].z + iPGLUnit.z*norm_rnd();
+                    noisyPoint.x = intersectedPoints->points[iCounter].x + iPGLUnit.x*noise;
+                    noisyPoint.y = intersectedPoints->points[iCounter].y + iPGLUnit.y*noise;
+                    noisyPoint.z = intersectedPoints->points[iCounter].z + iPGLUnit.z*noise;
 
                     selectedNoisyPoints->push_back(noisyPoint);
                 }
@@ -868,7 +1009,7 @@ int main()
 #ifdef VIRTUAL_VIEW_INTERSECTED_POINTS
 
     // Create the visualizer
-    pcl::visualization::PCLVisualizer viewerFour ("Visualize the simulated scene");
+    pcl::visualization::PCLVisualizer viewerFour ("Virtual View - Camera @ Origin, Object Moved - All intersected points");
 
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> totalIntersectedPointsColorHandler (totalIntersectedPoints, 255, 0, 255);
 
@@ -917,7 +1058,7 @@ int main()
 #ifdef VIRTUAL_VIEW_SELECTED_POINTS
     // View just the selected points
     // Create the visualizer
-    pcl::visualization::PCLVisualizer viewerFive ("Visualize the simulated scene");
+    pcl::visualization::PCLVisualizer viewerFive ("Virtual View - Camera @ Origin, Object Moved - All selected points");
 
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> selectedPointsColorHandler (selectedPoints, 255, 0, 255);
 
@@ -966,7 +1107,7 @@ int main()
 #ifdef VIRTUAL_VIEW_SELECTED_NOISY_POINTS
     // View just the selected points
     // Create the visualizer
-    pcl::visualization::PCLVisualizer viewerSix ("Visualize the simulated scene with noise");
+    pcl::visualization::PCLVisualizer viewerSix ("Virtual View - Camera @ Origin, Object Moved - All selected points with noise");
 
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> selectedNoisyPointsColorHandler (selectedNoisyPoints, 255, 0, 255);
 
@@ -1014,6 +1155,4 @@ int main()
     }
     viewerSix.close();
 #endif
-
-
 }
