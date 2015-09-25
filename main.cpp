@@ -23,13 +23,16 @@
 #include <pcl/surface/simplification_remove_unused_vertices.h>
 
 using namespace std;
+const float radiansToDegrees = 180/M_PI;
+const float degreesToRadians = M_PI/180;
 
-// Comment out the view's you'd like to see.
-#define ACTUAL_VIEW
-#define VIRTUAL_VIEW
-#define VIRTUAL_VIEW_BACKFACE_AND_FRUSTUM_CULLING
-#define VIRTUAL_VIEW_INTERSECTED_POINTS
-#define VIRTUAL_VIEW_SELECTED_POINTS
+
+// Comment out the view's you don't want to see.
+//#define ACTUAL_VIEW
+//#define VIRTUAL_VIEW
+//#define VIRTUAL_VIEW_BACKFACE_AND_FRUSTUM_CULLING
+//#define VIRTUAL_VIEW_INTERSECTED_POINTS
+//#define VIRTUAL_VIEW_SELECTED_POINTS
 #define VIRTUAL_VIEW_SELECTED_NOISY_POINTS
 
 float pointCountSample(float x, std::string sample_name)
@@ -70,9 +73,9 @@ float pointCountSample(float x, std::string sample_name)
         float b7 =      0.6264;
         float c7 =      -2.364;
 
-        float pointCountOutput = a1*sin((b1*x+c1)*M_PI/180) + a2*sin((b2*x+c2)*M_PI/180) + a3*sin((b3*x+c3)*M_PI/180) +
-                                 a4*sin((b4*x+c4)*M_PI/180) + a5*sin((b5*x+c5)*M_PI/180) + a6*sin((b6*x+c6)*M_PI/180) +
-                                 a7*sin((b7*x+c7)*M_PI/180);
+        float pointCountOutput = a1*sin((b1*x+c1)*degreesToRadians) + a2*sin((b2*x+c2)*degreesToRadians) + a3*sin((b3*x+c3)*degreesToRadians) +
+                                 a4*sin((b4*x+c4)*degreesToRadians) + a5*sin((b5*x+c5)*degreesToRadians) + a6*sin((b6*x+c6)*degreesToRadians) +
+                                 a7*sin((b7*x+c7)*degreesToRadians);
 
         return pointCountOutput;
     }
@@ -103,9 +106,9 @@ float pointCountSample(float x, std::string sample_name)
         float b8 =      0.3954;
         float c8 =      -2.327;
 
-        float pointCountOutput = a1*sin((b1*x+c1)*M_PI/180) + a2*sin((b2*x+c2)*M_PI/180) + a3*sin((b3*x+c3)*M_PI/180) +
-                                 a4*sin((b4*x+c4)*M_PI/180) + a5*sin((b5*x+c5)*M_PI/180) + a6*sin((b6*x+c6)*M_PI/180) +
-                                 a7*sin((b7*x+c7)*M_PI/180) + a8*sin((b8*x+c8)*M_PI/180);
+        float pointCountOutput = a1*sin((b1*x+c1)*degreesToRadians) + a2*sin((b2*x+c2)*degreesToRadians) + a3*sin((b3*x+c3)*degreesToRadians) +
+                                 a4*sin((b4*x+c4)*degreesToRadians) + a5*sin((b5*x+c5)*degreesToRadians) + a6*sin((b6*x+c6)*degreesToRadians) +
+                                 a7*sin((b7*x+c7)*degreesToRadians) + a8*sin((b8*x+c8)*degreesToRadians);
 
         return pointCountOutput;
     }
@@ -136,9 +139,9 @@ float pointCountSample(float x, std::string sample_name)
         float b8 =      0.5886;
         float c8 =      -2.828;
 
-        float pointCountOutput = a1*sin((b1*x+c1)*M_PI/180) + a2*sin((b2*x+c2)*M_PI/180) + a3*sin((b3*x+c3)*M_PI/180) +
-                                 a4*sin((b4*x+c4)*M_PI/180) + a5*sin((b5*x+c5)*M_PI/180) + a6*sin((b6*x+c6)*M_PI/180) +
-                                 a7*sin((b7*x+c7)*M_PI/180) + a8*sin((b8*x+c8)*M_PI/180);
+        float pointCountOutput = a1*sin((b1*x+c1)*degreesToRadians) + a2*sin((b2*x+c2)*degreesToRadians) + a3*sin((b3*x+c3)*degreesToRadians) +
+                                 a4*sin((b4*x+c4)*degreesToRadians) + a5*sin((b5*x+c5)*degreesToRadians) + a6*sin((b6*x+c6)*degreesToRadians) +
+                                 a7*sin((b7*x+c7)*degreesToRadians) + a8*sin((b8*x+c8)*degreesToRadians);
 
         return pointCountOutput;
     }
@@ -151,16 +154,6 @@ float pointCountSample(float x, std::string sample_name)
         cout << "\033[1;31m ********************************************\033[0m" << endl;
         exit(EXIT_FAILURE);
     }
-}
-
-float dotProductAngle(pcl::PointXYZ p1, pcl::PointXYZ p2)
-{
-    float p1p2dot = (p1.x * p2.x + p1.y * p2.y + p1.z * p2.z);
-    float p1Magnitude = sqrt(pow(p1.x,2) + pow(p1.y,2) + pow(p1.z,2));
-    float p2Magnitude = sqrt(pow(p2.x,2) + pow(p2.y,2) + pow(p2.z,2));
-    float p1p2angle = acos(p1p2dot / (p1Magnitude*p2Magnitude));
-
-    return p1p2angle;   // In radians
 }
 
 float standardDeviationSample(float x, std::string sample_name)
@@ -192,9 +185,9 @@ float standardDeviationSample(float x, std::string sample_name)
         float b8 =      0.2062;
         float c8 =     -0.7186;
 
-        float standardDeviation = a1*sin((b1*x+c1)*M_PI/180) + a2*sin((b2*x+c2)*M_PI/180) + a3*sin((b3*x+c3)*M_PI/180) +
-                                  a4*sin((b4*x+c4)*M_PI/180) + a5*sin((b5*x+c5)*M_PI/180) + a6*sin((b6*x+c6*M_PI/180)) +
-                                  a7*sin((b7*x+c7)*M_PI/180) + a8*sin((b8*x+c8)*M_PI/180);
+        float standardDeviation = a1*sin((b1*x+c1)*degreesToRadians) + a2*sin((b2*x+c2)*degreesToRadians) + a3*sin((b3*x+c3)*degreesToRadians) +
+                                  a4*sin((b4*x+c4)*degreesToRadians) + a5*sin((b5*x+c5)*degreesToRadians) + a6*sin((b6*x+c6*degreesToRadians)) +
+                                  a7*sin((b7*x+c7)*degreesToRadians) + a8*sin((b8*x+c8)*degreesToRadians);
 
         return standardDeviation/1000;
     }
@@ -225,9 +218,9 @@ float standardDeviationSample(float x, std::string sample_name)
         float b8 =      0.4458;
         float c8 =       1.179;
 
-        float standardDeviation = a1*sin((b1*x+c1))*M_PI/180 + a2*sin((b2*x+c2))*M_PI/180 + a3*sin((b3*x+c3))*M_PI/180 +
-                                  a4*sin((b4*x+c4))*M_PI/180 + a5*sin((b5*x+c5))*M_PI/180 + a6*sin((b6*x+c6))*M_PI/180 +
-                                  a7*sin((b7*x+c7))*M_PI/180 + a8*sin((b8*x+c8))*M_PI/180;
+        float standardDeviation = a1*sin((b1*x+c1))*degreesToRadians + a2*sin((b2*x+c2))*degreesToRadians + a3*sin((b3*x+c3))*degreesToRadians +
+                                  a4*sin((b4*x+c4))*degreesToRadians + a5*sin((b5*x+c5))*degreesToRadians + a6*sin((b6*x+c6))*degreesToRadians +
+                                  a7*sin((b7*x+c7))*degreesToRadians + a8*sin((b8*x+c8))*degreesToRadians;
 
         return standardDeviation/1000;
     }
@@ -258,9 +251,9 @@ float standardDeviationSample(float x, std::string sample_name)
         float b8 =      0.5282;
         float c8 =       0.399;
 
-        float standardDeviation = a1*sin((b1*x+c1)*M_PI/180) + a2*sin((b2*x+c2)*M_PI/180) + a3*sin((b3*x+c3)*M_PI/180) +
-                                 a4*sin((b4*x+c4)*M_PI/180) + a5*sin((b5*x+c5)*M_PI/180) + a6*sin((b6*x+c6)*M_PI/180) +
-                                 a7*sin((b7*x+c7)*M_PI/180) + a8*sin((b8*x+c8)*M_PI/180);
+        float standardDeviation = a1*sin((b1*x+c1)*degreesToRadians) + a2*sin((b2*x+c2)*degreesToRadians) + a3*sin((b3*x+c3)*degreesToRadians) +
+                                 a4*sin((b4*x+c4)*degreesToRadians) + a5*sin((b5*x+c5)*degreesToRadians) + a6*sin((b6*x+c6)*degreesToRadians) +
+                                 a7*sin((b7*x+c7)*degreesToRadians) + a8*sin((b8*x+c8)*degreesToRadians);
 
         return standardDeviation/1000;
     }
@@ -291,9 +284,9 @@ float standardDeviationSample(float x, std::string sample_name)
         float b8 =      0.6149;
         float c8 =      0.8155;
 
-        float standardDeviation = a1*sin((b1*x+c1)*M_PI/180) + a2*sin((b2*x+c2)*M_PI/180) + a3*sin((b3*x+c3)*M_PI/180) +
-                                 a4*sin((b4*x+c4)*M_PI/180) + a5*sin((b5*x+c5)*M_PI/180) + a6*sin((b6*x+c6)*M_PI/180) +
-                                 a7*sin((b7*x+c7)*M_PI/180) + a8*sin((b8*x+c8)*M_PI/180);
+        float standardDeviation = a1*sin((b1*x+c1)*degreesToRadians) + a2*sin((b2*x+c2)*degreesToRadians) + a3*sin((b3*x+c3)*degreesToRadians) +
+                                 a4*sin((b4*x+c4)*degreesToRadians) + a5*sin((b5*x+c5)*degreesToRadians) + a6*sin((b6*x+c6)*degreesToRadians) +
+                                 a7*sin((b7*x+c7)*degreesToRadians) + a8*sin((b8*x+c8)*degreesToRadians);
 
         return standardDeviation/1000;
     }
@@ -308,11 +301,58 @@ float standardDeviationSample(float x, std::string sample_name)
     }
 }
 
+float sampleCutOffAngle(std::string sample_name)
+{
+    if(sample_name == "white")
+    {
+        float cutOffAngle = 55;
+        return cutOffAngle;
+    }
+    else if(sample_name == "10")
+    {
+        float cutOffAngle = 55;
+        return cutOffAngle;
+    }
+    else if(sample_name == "11")
+    {
+        float cutOffAngle = 55;
+        return cutOffAngle;
+    }
+    else if(sample_name == "12")
+    {
+        float cutOffAngle = 55;
+        return cutOffAngle;
+    }
+    else
+    {
+        cout << "\033[1;31m ********************************************\033[0m" << endl;
+        cout << "\033[1;31m ********************************************\033[0m" << endl;
+        cout << "\033[1;31m !!!!sampleSelector is an invalid value!!!!!!\033[0m" << endl;
+        cout << "\033[1;31m ********************************************\033[0m" << endl;
+        cout << "\033[1;31m ********************************************\033[0m" << endl;
+        exit(EXIT_FAILURE);
+    }
+}
+
+float dotProductAngle(pcl::PointXYZ p1, pcl::PointXYZ p2)
+{
+    float p1p2dot = (p1.x * p2.x + p1.y * p2.y + p1.z * p2.z);
+    float p1Magnitude = sqrt(pow(p1.x,2) + pow(p1.y,2) + pow(p1.z,2));
+    float p2Magnitude = sqrt(pow(p2.x,2) + pow(p2.y,2) + pow(p2.z,2));
+    float p1p2angle = acos(p1p2dot / (p1Magnitude*p2Magnitude));
+
+    return p1p2angle;   // In radians
+}
+
+
 int main()
 {
     /// Future Changes Required:
     /// *Depth values make a difference to the number of points on the surface.
-    /// -Number of points layed needs to vary with camera distance from the object, further away less points etc.
+    /// *Local noise areas addressed
+    /// *Add more cameras
+    /// *Camera data for object's not centered at the origin.
+    /// *Number of points laid needs to vary with camera distance from the object, further away less points etc.
 
     // Tic Toc Timer Start
     time_t tstart,tend;
@@ -320,13 +360,20 @@ int main()
 
     //////////////////////////// Initialize the variables /////////////////////////////
     pcl::PolygonMesh objectMesh;
-
+    // Sample Specific
+    std::string sampleSelector ;
+    // Initialize normal distribution values;
+    boost::mt19937 generator;
+    generator.seed(time(0));
+    // Arbitrary distance away, used to draw the Frustum.
     double pixelGridDistance = 2;
+    //
 
+    // ******************USER INPUTS*********************//
     // Camera roll,pitch and yaw - relative to WCS
-    float cameraRollZAxis = 0*M_PI/180; //
-    float cameraPitchXAxis = (90-54.7)*M_PI/180; // 45
-    float cameraYawYAxis = -135*M_PI/180; //-135
+    float cameraRollZAxisRadians = 0*degreesToRadians; //
+    float cameraPitchXAxisRadians = (90-54.7)*degreesToRadians; // 45
+    float cameraYawYAxisRadians = -135*degreesToRadians; //-135
     float cameraXDistance = 0.346;
     float cameraYDistance = 0.346;
     float cameraZDistance = 0.346;
@@ -337,16 +384,10 @@ int main()
     double cameraVerticalPixels = 480;
     double cameraHorizontalPixels = 752;
 
-    // Sample Specific
-    std::string sampleSelector ;//= "white";
-
     cout << "Type the sample that will be used:" << endl;
     cout << "Choose from: white, 10 ,11 ,12"<< endl;
     cin >> sampleSelector;
-
-    // Initialize normal distribution values;
-    boost::mt19937 generator;
-    generator.seed(time(0));
+    // **************************************************//
     ///////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////// Load files ////////////////////////////////////
@@ -356,7 +397,8 @@ int main()
 
     // Extract Point and Normal cloud from the mesh file. Storing them seperatley.
     pcl::fromPCLPointCloud2(objectMesh.cloud,*objectPointCloud);
-    pcl::fromPCLPointCloud2(objectMesh.cloud,*objectNormalCloud); // Will throw a terminal warning if object_mesh doesn't contain curvature data. Can be ignored.
+    // Will throw a terminal warning if object_mesh doesn't contain curvature data. Can be ignored.
+    pcl::fromPCLPointCloud2(objectMesh.cloud,*objectNormalCloud);
 
     // Check to see if the objectNormalCloud has normals, extracted from objectMesh.
     if(objectNormalCloud->at(0).normal_x == 0 && objectNormalCloud->at(0).normal_y == 0 && objectNormalCloud->at(0).normal_z == 0 )
@@ -364,9 +406,9 @@ int main()
         cout << "\033[1;31m ********************************************\033[0m" << endl;
         cout << "\033[1;31m ********************************************\033[0m" << endl;
         cout << "\033[1;31m !!Check for Normals in the objectMesh file!!\033[0m" << endl;
-        cout << "\033[1;31m !!!Backface culling may have been skipped!!!\033[0m" << endl;
         cout << "\033[1;31m ********************************************\033[0m" << endl;
         cout << "\033[1;31m ********************************************\033[0m" << endl;
+        exit(EXIT_FAILURE);
     }
     ///////////////////////////////////////////////////////////////////////////////////
 
@@ -432,15 +474,15 @@ int main()
         Eigen::Matrix4f actualViewTransform = Eigen::Matrix4f::Identity();
 
         // Rotation section
-        actualViewTransform(0,0) = cos(cameraRollZAxis)*cos(cameraYawYAxis);
-        actualViewTransform(0,1) = (cos(cameraRollZAxis)*sin(cameraYawYAxis)*sin(cameraPitchXAxis)) - (sin(cameraRollZAxis)*cos(cameraPitchXAxis));
-        actualViewTransform(0,2) = (cos(cameraRollZAxis)*sin(cameraYawYAxis)*cos(cameraPitchXAxis)) + (sin(cameraRollZAxis)*sin(cameraPitchXAxis));
-        actualViewTransform(1,0) = sin(cameraRollZAxis)*cos(cameraYawYAxis);
-        actualViewTransform(1,1) = (sin(cameraRollZAxis)*sin(cameraYawYAxis)*sin(cameraPitchXAxis)) + (cos(cameraRollZAxis)*cos(cameraPitchXAxis));
-        actualViewTransform(1,2) = (sin(cameraRollZAxis)*sin(cameraYawYAxis)*cos(cameraPitchXAxis)) - (cos(cameraRollZAxis)*sin(cameraPitchXAxis));
-        actualViewTransform(2,0) = -sin(cameraYawYAxis);
-        actualViewTransform(2,1) = sin(cameraPitchXAxis)*cos(cameraYawYAxis);
-        actualViewTransform(2,2) = cos(cameraPitchXAxis)*cos(cameraYawYAxis);
+        actualViewTransform(0,0) = cos(cameraRollZAxisRadians)*cos(cameraYawYAxisRadians);
+        actualViewTransform(0,1) = (cos(cameraRollZAxisRadians)*sin(cameraYawYAxisRadians)*sin(cameraPitchXAxisRadians)) - (sin(cameraRollZAxisRadians)*cos(cameraPitchXAxisRadians));
+        actualViewTransform(0,2) = (cos(cameraRollZAxisRadians)*sin(cameraYawYAxisRadians)*cos(cameraPitchXAxisRadians)) + (sin(cameraRollZAxisRadians)*sin(cameraPitchXAxisRadians));
+        actualViewTransform(1,0) = sin(cameraRollZAxisRadians)*cos(cameraYawYAxisRadians);
+        actualViewTransform(1,1) = (sin(cameraRollZAxisRadians)*sin(cameraYawYAxisRadians)*sin(cameraPitchXAxisRadians)) + (cos(cameraRollZAxisRadians)*cos(cameraPitchXAxisRadians));
+        actualViewTransform(1,2) = (sin(cameraRollZAxisRadians)*sin(cameraYawYAxisRadians)*cos(cameraPitchXAxisRadians)) - (cos(cameraRollZAxisRadians)*sin(cameraPitchXAxisRadians));
+        actualViewTransform(2,0) = -sin(cameraYawYAxisRadians);
+        actualViewTransform(2,1) = sin(cameraPitchXAxisRadians)*cos(cameraYawYAxisRadians);
+        actualViewTransform(2,2) = cos(cameraPitchXAxisRadians)*cos(cameraYawYAxisRadians);
 
         // Translation section
         actualViewTransform(0,3) = cameraXDistance; //x
@@ -524,15 +566,15 @@ int main()
         Eigen::Matrix4f virtualViewRotationYawYAxis = Eigen::Matrix4f::Identity();
 
         // Rotation section
-        virtualViewRotationYawYAxis(0,0) = cos(0.0)*cos(-cameraYawYAxis);
-        virtualViewRotationYawYAxis(0,1) = (cos(0.0)*sin(-cameraYawYAxis)*sin(0.0)) - (sin(0.0)*cos(0.0));
-        virtualViewRotationYawYAxis(0,2) = (cos(0.0)*sin(-cameraYawYAxis)*cos(0.0)) + (sin(0.0)*sin(0.0));
-        virtualViewRotationYawYAxis(1,0) = sin(0.0)*cos(-cameraYawYAxis);
-        virtualViewRotationYawYAxis(1,1) = (sin(0.0)*sin(-cameraYawYAxis)*sin(0.0)) + (cos(0.0)*cos(0.0));
-        virtualViewRotationYawYAxis(1,2) = (sin(0.0)*sin(-cameraYawYAxis)*cos(0.0)) - (cos(0.0)*sin(0.0));
-        virtualViewRotationYawYAxis(2,0) = -sin(-cameraYawYAxis);
-        virtualViewRotationYawYAxis(2,1) = sin(0.0)*cos(-cameraYawYAxis);
-        virtualViewRotationYawYAxis(2,2) = cos(0.0)*cos(-cameraYawYAxis);
+        virtualViewRotationYawYAxis(0,0) = cos(0.0)*cos(-cameraYawYAxisRadians);
+        virtualViewRotationYawYAxis(0,1) = (cos(0.0)*sin(-cameraYawYAxisRadians)*sin(0.0)) - (sin(0.0)*cos(0.0));
+        virtualViewRotationYawYAxis(0,2) = (cos(0.0)*sin(-cameraYawYAxisRadians)*cos(0.0)) + (sin(0.0)*sin(0.0));
+        virtualViewRotationYawYAxis(1,0) = sin(0.0)*cos(-cameraYawYAxisRadians);
+        virtualViewRotationYawYAxis(1,1) = (sin(0.0)*sin(-cameraYawYAxisRadians)*sin(0.0)) + (cos(0.0)*cos(0.0));
+        virtualViewRotationYawYAxis(1,2) = (sin(0.0)*sin(-cameraYawYAxisRadians)*cos(0.0)) - (cos(0.0)*sin(0.0));
+        virtualViewRotationYawYAxis(2,0) = -sin(-cameraYawYAxisRadians);
+        virtualViewRotationYawYAxis(2,1) = sin(0.0)*cos(-cameraYawYAxisRadians);
+        virtualViewRotationYawYAxis(2,2) = cos(0.0)*cos(-cameraYawYAxisRadians);
 
         pcl::transformPointCloud (*objectPointCloud, *objectPointCloud, virtualViewRotationYawYAxis);
         pcl::transformPointCloud (*objectNormalCloud, *objectNormalCloud, virtualViewRotationYawYAxis);
@@ -542,14 +584,14 @@ int main()
 
         // Rotation section
         virtualViewRotationPitchXAxis(0,0) = cos(0.0)*cos(0.0);
-        virtualViewRotationPitchXAxis(0,1) = (cos(0.0)*sin(0.0)*sin(-cameraPitchXAxis)) - (sin(0.0)*cos(-cameraPitchXAxis));
-        virtualViewRotationPitchXAxis(0,2) = (cos(0.0)*sin(0.0)*cos(-cameraPitchXAxis)) + (sin(0.0)*sin(-cameraPitchXAxis));
+        virtualViewRotationPitchXAxis(0,1) = (cos(0.0)*sin(0.0)*sin(-cameraPitchXAxisRadians)) - (sin(0.0)*cos(-cameraPitchXAxisRadians));
+        virtualViewRotationPitchXAxis(0,2) = (cos(0.0)*sin(0.0)*cos(-cameraPitchXAxisRadians)) + (sin(0.0)*sin(-cameraPitchXAxisRadians));
         virtualViewRotationPitchXAxis(1,0) = sin(0.0)*cos(0.0);
-        virtualViewRotationPitchXAxis(1,1) = (sin(0.0)*sin(0.0)*sin(-cameraPitchXAxis)) + (cos(0.0)*cos(-cameraPitchXAxis));
-        virtualViewRotationPitchXAxis(1,2) = (sin(0.0)*sin(0.0)*cos(-cameraPitchXAxis)) - (cos(0.0)*sin(-cameraPitchXAxis));
+        virtualViewRotationPitchXAxis(1,1) = (sin(0.0)*sin(0.0)*sin(-cameraPitchXAxisRadians)) + (cos(0.0)*cos(-cameraPitchXAxisRadians));
+        virtualViewRotationPitchXAxis(1,2) = (sin(0.0)*sin(0.0)*cos(-cameraPitchXAxisRadians)) - (cos(0.0)*sin(-cameraPitchXAxisRadians));
         virtualViewRotationPitchXAxis(2,0) = -sin(0.0);
-        virtualViewRotationPitchXAxis(2,1) = sin(-cameraPitchXAxis)*cos(0.0);
-        virtualViewRotationPitchXAxis(2,2) = cos(-cameraPitchXAxis)*cos(0.0);
+        virtualViewRotationPitchXAxis(2,1) = sin(-cameraPitchXAxisRadians)*cos(0.0);
+        virtualViewRotationPitchXAxis(2,2) = cos(-cameraPitchXAxisRadians)*cos(0.0);
 
         pcl::transformPointCloud (*objectPointCloud, *objectPointCloud, virtualViewRotationPitchXAxis);
         pcl::transformPointCloud (*objectNormalCloud, *objectNormalCloud, virtualViewRotationPitchXAxis);
@@ -558,12 +600,12 @@ int main()
         Eigen::Matrix4f virtualViewRotationRollZAxis = Eigen::Matrix4f::Identity();
 
         // Rotation section
-        virtualViewRotationRollZAxis(0,0) = cos(-cameraRollZAxis)*cos(0.0);
-        virtualViewRotationRollZAxis(0,1) = (cos(-cameraRollZAxis)*sin(0.0)*sin(0.0)) - (sin(-cameraRollZAxis)*cos(0.0));
-        virtualViewRotationRollZAxis(0,2) = (cos(-cameraRollZAxis)*sin(0.0)*cos(0.0)) + (sin(-cameraRollZAxis)*sin(0.0));
-        virtualViewRotationRollZAxis(1,0) = sin(-cameraRollZAxis)*cos(0.0);
-        virtualViewRotationRollZAxis(1,1) = (sin(-cameraRollZAxis)*sin(0.0)*sin(0.0)) + (cos(-cameraRollZAxis)*cos(0.0));
-        virtualViewRotationRollZAxis(1,2) = (sin(-cameraRollZAxis)*sin(0.0)*cos(0.0)) - (cos(-cameraRollZAxis)*sin(0.0));
+        virtualViewRotationRollZAxis(0,0) = cos(-cameraRollZAxisRadians)*cos(0.0);
+        virtualViewRotationRollZAxis(0,1) = (cos(-cameraRollZAxisRadians)*sin(0.0)*sin(0.0)) - (sin(-cameraRollZAxisRadians)*cos(0.0));
+        virtualViewRotationRollZAxis(0,2) = (cos(-cameraRollZAxisRadians)*sin(0.0)*cos(0.0)) + (sin(-cameraRollZAxisRadians)*sin(0.0));
+        virtualViewRotationRollZAxis(1,0) = sin(-cameraRollZAxisRadians)*cos(0.0);
+        virtualViewRotationRollZAxis(1,1) = (sin(-cameraRollZAxisRadians)*sin(0.0)*sin(0.0)) + (cos(-cameraRollZAxisRadians)*cos(0.0));
+        virtualViewRotationRollZAxis(1,2) = (sin(-cameraRollZAxisRadians)*sin(0.0)*cos(0.0)) - (cos(-cameraRollZAxisRadians)*sin(0.0));
         virtualViewRotationRollZAxis(2,0) = -sin(0.0);
         virtualViewRotationRollZAxis(2,1) = sin(0.0)*cos(0.0);
         virtualViewRotationRollZAxis(2,2) = cos(0.0)*cos(0.0);
@@ -761,8 +803,7 @@ int main()
         isVisible = isVisible && (p3.y < p3.z*(frustumTopLeft.y/frustumTopLeft.z)) && (p3.y > p3.z*(frustumBottomLeft.y/frustumBottomLeft.z));
         isVisible = isVisible && (p3.x < p3.z*(frustumTopLeft.x/frustumTopLeft.z)) && (p3.x > p3.z*(frustumTopRight.x/frustumTopRight.z));
 
-        // If isVisible is True, collect the points in visiblePoints.
-        // If isVisible is True, collect the face vertices in visibleFaces.
+        // If isVisible is True, collect the points in visiblePoints & collect the face vertices in visibleFaces.
         if(isVisible)
         {
             visiblePoints.push_back(p1);
@@ -800,12 +841,14 @@ int main()
     /// Add pixelGridCloud Points ///
     //Represent pixelGridCloud
     //viewerThree.addPointCloud(pixelGridCloud, pixelGridColorHandler, "pixelGridCloud");
+
+    // Draw frustum box
     viewerThree.addLine(frustumBottomRight,frustumTopRight,"rightSide",0);
     viewerThree.addLine(frustumTopRight,frustumTopLeft,"topSide",0);
     viewerThree.addLine(frustumTopLeft,frustumBottomLeft,"leftSide",0);
     viewerThree.addLine(frustumBottomLeft,frustumBottomRight,"bottomSide",0);
 
-    //Draw frustum itself.
+    // Draw frustum edges
     viewerThree.addLine(pcl::PointXYZ(0,0,0),frustumTopRight,"topRight",0);
     viewerThree.addLine(pcl::PointXYZ(0,0,0),frustumTopLeft,"topLeft",0);
     viewerThree.addLine(pcl::PointXYZ(0,0,0),frustumBottomLeft,"bottomLeft",0);
@@ -833,23 +876,51 @@ int main()
 
     //////////////////////// Adding Points to the surfaces  ///////////////////////////
     pcl::fromPCLPointCloud2(objectMesh.cloud,*objectPointCloud);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr selectedPoints (new (pcl::PointCloud<pcl::PointXYZ>));
+    // All points that intersect the mesh faces - the perfect scenario.
     pcl::PointCloud<pcl::PointXYZ>::Ptr totalIntersectedPoints (new (pcl::PointCloud<pcl::PointXYZ>));
-    pcl::PointCloud<pcl::PointXYZ>::Ptr selectedNoisyPoints (new (pcl::PointCloud<pcl::PointXYZ>));
+    // The points from totalIntersectedPoints that have been selected using the probability ratio and random number generator.
+    pcl::PointCloud<pcl::PointXYZ>::Ptr selectedPoints (new (pcl::PointCloud<pcl::PointXYZ>));
+    // The pixel grid pixels that had points that intersected the mesh faces.
     pcl::PointCloud<pcl::PointXYZ>::Ptr intersectedPixelGridLocations (new (pcl::PointCloud<pcl::PointXYZ>));
-    pcl::PointCloud<pcl::PointXYZ>::iterator pixelGrid_Iterator;  // Each point in the pixelgrid of the camera
-    pcl::PointXYZ p; // The point of intersection of a plane and the line.
+    // The points from selectedPoints that have added noise to them. - The end point cloud - Camera representation
+    pcl::PointCloud<pcl::PointXYZ>::Ptr selectedNoisyPoints (new (pcl::PointCloud<pcl::PointXYZ>));
+
+    // Iterator to loop through each point in the pixelgrid
+    pcl::PointCloud<pcl::PointXYZ>::iterator pixelGrid_Iterator;
+    // The point of intersection of a plane and the ray to a pixel on the pixelgrid.
+    pcl::PointXYZ p;
+    // The pixel on the pixelgrid.
     pcl::PointXYZ pointPixelGrid;
+
+    /* BARYCENTRIC COORDINATE SYSTEM
+     *
+     * Wikipedia Snippet:
+     * Barycentric coordinate system is a coordinate system in which the location of a point of a simplex
+     * (a triangle, tetrahedron, etc.) is specified as the center of mass, or barycenter, of usually
+     * unequal masses placed at its vertices. Coordinates also extend outside the simplex, where one
+     * or more coordinates become negative.
+     *
+     * In this code, IF point lies within the mesh face when (alpha > 0) && (beta > 0) && (gamma > 0);
+     *
+     * For more info see:
+     * https://en.wikipedia.org/wiki/Barycentric_coordinate_system
+     * http://stackoverflow.com/questions/13300904/determine-whether-point-lies-inside-triangle
+     */
     float alpha;
     float beta;
     float gamma;
+
+    // Vector class of phiValues that is cleared at the start of each face.
+    // Vector class as it is an array that doesn't have to have it's sized specified, it's dynamic in size.
     std::vector<float> phiValues;
+
+    // Sum each mesh face area as we loop through them.
     float totalFaceArea = 0;
 
     // The point at which the line from the camera focalpoint intersects the face of object_mesh
     for (face = objectMesh.polygons.begin(); face != objectMesh.polygons.end(); face++)
     {
-
+        // All points that intersect the specfic mesh face in the loop. Defined here to reset for each mesh face.
         pcl::PointCloud<pcl::PointXYZ>::Ptr intersectedPoints (new (pcl::PointCloud<pcl::PointXYZ>));
 
         // Find the vertices of each face.
@@ -859,13 +930,24 @@ int main()
 
         // Get XYZ point for each of the vertices.
         // As our camera origin is (0,0,0) at the WCS origin,
-        // each point represents a vector from the camera origin to each vertex in object_cloud.
+        // each point represents a position vector (!unit) from the camera origin to each vertex in object_cloud.
         pcl::PointXYZ p1 = objectPointCloud->points.at(v1);
         pcl::PointXYZ p2 = objectPointCloud->points.at(v2);
         pcl::PointXYZ p3 = objectPointCloud->points.at(v3);
 
-        // Find equation of the plane from 3 points. p1,p2,p3
-        // More info: http://www.had2know.com/academics/equation-plane-through-3-points.html
+        /* EQUATION OF A PLANE FROM 3 COORDINATES.
+         * ax + by + cz = d
+         * Find equation of the plane from 3 points. p1,p2,p3
+         *
+         * Create vector U1 from P1 to P2
+         * Create vector U2 from P1 to P3
+         *
+         * Perform cross product of U1 and U2 to create vector U3
+         *
+         * For more info see:
+         * http://www.had2know.com/academics/equation-plane-through-3-points.html
+         */
+
         // Plane vector 1
         pcl::PointXYZ u1;
         u1.x = p2.x - p1.x;
@@ -891,11 +973,11 @@ int main()
         float u2Magnitude = sqrt(pow(u2.x,2) + pow(u2.y,2) + pow(u2.z,2));
         float faceArea = 0.5*(u1Magnitude*u2Magnitude)*sin(u1u2angle);
 
+        // Add mesh face area to totalFaceArea being calculated for the whole object.
         totalFaceArea = totalFaceArea + faceArea;
 
-        int pointIntersectionCounter = 0;
-
-        phiValues.clear(); // Ensure empty vector varaible before counting the ray phi angles.
+        // Ensure empty vector varaible before counting the ray phi angles.
+        phiValues.clear();
 
         // Work through all rays, to find which intersect and are contained within the area of the 3 coordinates.
         for(pixelGrid_Iterator = pixelGridCloud->points.begin(); pixelGrid_Iterator != pixelGridCloud->end(); pixelGrid_Iterator++)
@@ -907,10 +989,10 @@ int main()
             pointPixelGrid.y = (pixelGrid_Iterator->y) ;// sqrt(pow(pixelGrid_Iterator->x,2)+pow(pixelGrid_Iterator->y,2)+pow(pixelGrid_Iterator->z,2));
             pointPixelGrid.z = (pixelGrid_Iterator->z) ;// sqrt(pow(pixelGrid_Iterator->x,2)+pow(pixelGrid_Iterator->y,2)+pow(pixelGrid_Iterator->z,2));
 
-            float d_top = p1.x * u3.x + p1.y * u3.y + p1.z * u3.z;
             // If d_top is 0 then then every point on the line intersect the plane, i.e. the line fits in the plane.
-            float d_bottom = pointPixelGrid.x*u3.x + pointPixelGrid.y*u3.y + pointPixelGrid.z*u3.z;
+            float d_top = p1.x * u3.x + p1.y * u3.y + p1.z * u3.z;
             // If d_bottom is 0 then the line is parallel to the plane, this may not occur as backface culling should already have removed these occurances.
+            float d_bottom = pointPixelGrid.x*u3.x + pointPixelGrid.y*u3.y + pointPixelGrid.z*u3.z;
             float d = d_top / d_bottom;
 
             // Check to make sure the lines aren't parallel, only case when they won't intersect.
@@ -927,73 +1009,91 @@ int main()
             beta = ((p3.y - p1.y)*(p.x - p3.x) + (p1.x - p3.x)*(p.y - p3.y)) / ((p2.y - p3.y)*(p1.x - p3.x) + (p3.x - p2.x)*(p1.y - p3.y));
             gamma = 1.0f - alpha - beta;
 
-
+            // If the following statement is true then the point will be contained within the mesh face.
             isIntersected = isIntersected && (alpha > 0) && (beta > 0) && (gamma > 0);
 
             // If isIntersected is True, collect the points in instersectedPoints.
             if(isIntersected)
             {
+                // Collect all pixels used for intersected points in intersectedPixelGridLocations
                 intersectedPixelGridLocations->push_back(pointPixelGrid);
+                // Collect all point that are intersect with the all the object mesh faces
                 totalIntersectedPoints->push_back(p);
+                // COllect all the points that intersect with the current mesh face
                 intersectedPoints->push_back(p);
-                phiValues.push_back(180-(dotProductAngle(pointPixelGrid,u3)*180/M_PI));
-                if((180-(dotProductAngle(pointPixelGrid,u3)*180/M_PI)) >= 90)
+                // Calculate the phiValue for point of intersection - using 180-Ans as normal has flipped?
+                phiValues.push_back(180-(dotProductAngle(pointPixelGrid,u3)*radiansToDegrees));
+                // Error check, should have no values larger than 90, as these should be removed in Backface Culling
+                if((180-(dotProductAngle(pointPixelGrid,u3)*radiansToDegrees)) >= 90)
                 {
                     cout << "angle greater than 90" << endl;
                     break;
                 }
-//                cout << pointPixelGrid.x << " " << pointPixelGrid.y << " " <<pointPixelGrid.z << endl;
-//                cout << u3.x << " " << u3.y << " " << u3.z << endl;
-                pointIntersectionCounter++;
-
             }
         }
-        // Choose which points to keep or not.
-        float perfectPointDensity = pointIntersectionCounter/(faceArea*1000000);
+        // Calculate the point density of the face, for the perfect scenario
+        float perfectPointDensity = intersectedPoints->points.size()/(faceArea*1000000);
 
         for(int iCounter = 0; iCounter < intersectedPoints->points.size(); iCounter++)
         {
             bool isUnderMaxAngle = true;
 
-            isUnderMaxAngle = isUnderMaxAngle && (phiValues[iCounter] <= 55);
+            // Where the function for our data breaks down, remove all points after this angle.
+            isUnderMaxAngle = isUnderMaxAngle && (phiValues[iCounter] <= sampleCutOffAngle(sampleSelector));
 
             if(isUnderMaxAngle)
             {
                 bool isSuccessfull = true;
-                float rProjected = (53/2)*cos(phiValues[iCounter]*M_PI/180);
+                // John's projected area radius value
+                float rProjected = (53/2)*cos(phiValues[iCounter]*degreesToRadians);
+                // Calculate for projected area
                 float areaProjected = pow(rProjected,2)*M_PI;
+                // John's data value of number of points that should be present for the projected area value.
                 float realTotalPointCount = pointCountSample(phiValues[iCounter],sampleSelector);
+                // Divide number of points by the project area to get a points/mm^2 value.
                 float realPointDensity = realTotalPointCount / areaProjected;
+
+                // Create a probabilty value that a point should be there - compare data values and perfect number.
                 float pointProbability = realPointDensity / perfectPointDensity;
 
-                float randomNumberGenerator = ((double) rand() / (RAND_MAX)); // Random Number Generator between 0 and 1.
+                // Random Number Generator between 0 and 1.
+                float randomNumberGenerator = ((double) rand() / (RAND_MAX));
 
                 isSuccessfull = isSuccessfull && (randomNumberGenerator <= pointProbability);
 
                 if(isSuccessfull)
                 {
+                    // Add points that are successfull into selectedPoints
                     selectedPoints->push_back(intersectedPoints->points[iCounter]);
 
+                    // Calculate the magnitude of the vector from the camera focal point to the pixel on the pixelgrid.
                     float intersectedPixelGridLocationsMagnitude = sqrt(pow(intersectedPixelGridLocations->points[iCounter].x,2)+
                                                                         pow(intersectedPixelGridLocations->points[iCounter].y,2)+
                                                                         pow(intersectedPixelGridLocations->points[iCounter].z,2));
 
+                    // Retrieve standard deviation of noise from John's data
                     float sd = standardDeviationSample(phiValues[iCounter],sampleSelector);
+
+                    // Use boost libraries to calculate the standard deviation of noise to be added onto the point in question.
                     boost::normal_distribution<> norm_dist(0.0,sd);
                     boost::variate_generator<boost::mt19937&,boost::normal_distribution<> > norm_rnd(generator, norm_dist);
 
+                    // Get the noise value.
                     float noise = norm_rnd();
 
+                    // Create the unit vector between the camera focal point and the pixel grid point.
                     pcl::PointXYZ iPGLUnit;
                     iPGLUnit.x = intersectedPixelGridLocations->points[iCounter].x/intersectedPixelGridLocationsMagnitude;
                     iPGLUnit.y = intersectedPixelGridLocations->points[iCounter].y/intersectedPixelGridLocationsMagnitude;
                     iPGLUnit.z = intersectedPixelGridLocations->points[iCounter].z/intersectedPixelGridLocationsMagnitude;
 
+                    // Times the noise magnitude by the Unit vector component and add it to each point XYZ.
                     pcl::PointXYZ noisyPoint;
                     noisyPoint.x = intersectedPoints->points[iCounter].x + iPGLUnit.x*noise;
                     noisyPoint.y = intersectedPoints->points[iCounter].y + iPGLUnit.y*noise;
                     noisyPoint.z = intersectedPoints->points[iCounter].z + iPGLUnit.z*noise;
 
+                    // Collect all points with the noise added into selectedNoisyPoints.
                     selectedNoisyPoints->push_back(noisyPoint);
                 }
             }
